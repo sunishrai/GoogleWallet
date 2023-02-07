@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright 2022 Google Inc.
  *
@@ -20,13 +18,16 @@ package com.example.googlewallet
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.googlewallet.databinding.ActivityMainBinding
 
 import com.google.android.gms.pay.Pay
 import com.google.android.gms.pay.PayApiAvailabilityStatus
 import com.google.android.gms.pay.PayClient
+import java.util.Date
 import java.util.UUID
 
 
@@ -84,138 +85,121 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO: Handle the result
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == addToGoogleWalletRequestCode) {
             when (resultCode) {
                 RESULT_OK -> {
-                    // Pass saved successfully. Consider informing the user.
+                    Toast.makeText(this, "SUCCESS $resultCode", Toast.LENGTH_LONG).show()
                 }
+
                 RESULT_CANCELED -> {
+                    Toast.makeText(this, "CANCELED $resultCode", Toast.LENGTH_LONG).show()
                     // Save canceled
                 }
 
                 PayClient.SavePassesResult.SAVE_ERROR -> data?.let { intentData ->
                     val errorMessage = intentData.getStringExtra(PayClient.EXTRA_API_ERROR_MESSAGE)
+                    Toast.makeText(this, "$errorMessage $resultCode", Toast.LENGTH_LONG).show()
+                    Log.v("walletError", errorMessage!!)
                     // Handle error. Consider informing the user.
                 }
 
                 else -> {
+                    Toast.makeText(this, "non-API exception $resultCode", Toast.LENGTH_LONG).show()
                     // Handle unexpected (non-API) exception
                 }
             }
         }
     }
 
+//    private val issuerEmail = ""
+//    private val issuerId = "3388000000022196161"
+//    private val passClass = "3388000000022196161.6d5aa886-ddfe-4520-9dfa-0dcdb5e56caf"
+//    private val passId = UUID.randomUUID().toString()
+
     private val issuerEmail = ""
-    private val issuerId = "3388000000022195306"
-    private val passClass = "3388000000022195306.7a7f18ef-c069-4c54-be85-c0dcb01c2b0a"
+    private val issuerId = "3388000000022194436"
+    private val passClass = "3388000000022194436.123"
+//    private val passClass = "3388000000022194436.0987"
     private val passId = UUID.randomUUID().toString()
 
     private val newObjectJson = """
         {
-        "id": "3388000000022195306.7a7f18ef-c069-4c54-be85-c0dcb01c2b0a",
-        "classTemplateInfo": {
-          "cardTemplateOverride": {
-            "cardRowTemplateInfos": [
-              {
-                "twoItems": {
-                  "startItem": {
-                    "firstValue": {
-                      "fields": [
-                        {
-                          "fieldPath": "object.textModulesData['points']",
-                        },
-                      ],
-                    },
-                  },
-                  "endItem": {
-                    "firstValue": {
-                      "fields": [
-                        {
-                          "fieldPath": "object.textModulesData['contacts']",
-                        },
-                      ],
-                    },
-                  },
-                },
-              },
-            ],
+  "iss": "$issuerEmail",
+  "aud": "google",
+  "typ": "savetowallet",
+  "iat": ${Date().time/1000L},
+  "origins": [
+    "www.example.com"
+  ],
+  "payload": {
+    "genericObjects": [
+      {
+        "id": "$issuerId.$passId",
+        "classId": "$passClass",
+        "logo": {
+          "sourceUri": {
+            "uri": "https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/pass_google_logo.jpg"
           },
-          "detailsTemplateOverride": {
-            "detailsItemInfos": [
-              {
-                "item": {
-                  "firstValue": {
-                    "fields": [
-                      {
-                        "fieldPath": "class.imageModulesData['event_banner']",
-                      },
-                    ],
-                  },
-                },
-              },
-              {
-                "item": {
-                  "firstValue": {
-                    "fields": [
-                      {
-                        "fieldPath": "class.textModulesData['game_overview']",
-                      },
-                    ],
-                  },
-                },
-              },
-              {
-                "item": {
-                  "firstValue": {
-                    "fields": [
-                      {
-                        "fieldPath": "class.linksModuleData.uris['official_site']",
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
-          },
+          "contentDescription": {
+            "defaultValue": {
+              "language": "en",
+              "value": ""
+            }
+          }
         },
-        "imageModulesData": [
-          {
-            "mainImage": {
-              "kind": "walletobjects#image",
-              "sourceUri": {
-                "uri": "https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/google-io-2021-card.png",
-              },
-              "contentDescription": {
-                "kind": "walletobjects#localizedString",
-                "defaultValue": {
-                  "kind": "walletobjects#translatedString",
-                  "language": "en",
-                  "value": "Google I/O 2022 Banner",
-                },
-              },
-            },
-            "id": "event_banner",
-          },
-        ],
+        "cardTitle": {
+          "defaultValue": {
+            "language": "en",
+            "value": "Google I/O [DEMO ONLY]"
+          }
+        },
+        "subheader": {
+          "defaultValue": {
+            "language": "en",
+            "value": "Attendee"
+          }
+        },
+        "header": {
+          "defaultValue": {
+            "language": "en",
+            "value": "Alex McJacobs"
+          }
+        },
         "textModulesData": [
           {
-            "header": "Gather points meeting new people at Google I/O",
-            "body": "Join the game and accumulate points in this badge by meeting other attendees in the event.",
-            "id": "game_overview",
+            "id": "points",
+            "header": "POINTS",
+            "body": "1112"
           },
+          {
+            "id": "contacts",
+            "header": "CONTACTS",
+            "body": "79"
+          }
         ],
-        "linksModuleData": {
-          "uris": [
-            {
-              "uri": "https://io.google/2022/",
-              "description": "Official I/O '22 Site",
-              "id": "official_site",
-            },
-          ],
+        "barcode": {
+          "type": "QR_CODE",
+          "value": "BARCODE_VALUE",
+          "alternateText": null
         },
+        "hexBackgroundColor": "#4285f4",
+        "heroImage": {
+          "sourceUri": {
+            "uri": "https://storage.googleapis.com/wallet-lab-tools-codelab-artifacts-public/google-io-hero-demo-only.png"
+          },
+          "contentDescription": {
+            "defaultValue": {
+              "language": "en",
+              "value": "HERO_IMAGE_DESCRIPTION"
+            }
+          }
+        }
       }
-    """.trimIndent()
+    ]
+  }
+}"""
 }

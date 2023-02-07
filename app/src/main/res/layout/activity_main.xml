@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="350dp"
             android:layout_marginTop="20dp"
-            android:src="@drawable/ts_10_11019a"
+            android:src="@drawable/flag"
             android:contentDescription="A black shirt with the Google logo"/>
 
         <TextView

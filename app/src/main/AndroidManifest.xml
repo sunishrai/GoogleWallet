@@ -24,9 +24,9 @@
         </activity>
 
         <!-- This element is required in order to use the PaymentsClient -->
-        <meta-data
-            android:name="com.google.android.gms.wallet.api.enabled"
-            android:value="true" />
+<!--        <meta-data-->
+<!--            android:name="com.google.android.gms.wallet.api.enabled"-->
+<!--            android:value="true" />-->
     </application>
 
 </manifest>
